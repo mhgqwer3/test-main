@@ -7,7 +7,7 @@
 const API = (() => {
 
     // ── تعديل الـ BASE_URL لو السيرفر عنده IP مختلف ──
-    const BASE_URL = 'http://localhost:8080';
+    const BASE_URL = 'http://52.201.47.24:8080';
 
     // ─────────────────────────────────────────
     // Helpers
