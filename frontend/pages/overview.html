@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Overview</title>
+    <link rel="stylesheet" href="/GraduationProject/CSS/style.css" />
+    <link rel="stylesheet" href="/GraduationProject/CSS/overview.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  </head>
+  <body>
+    <script>
+  function logout() {
+    if (confirm('Are you sure you want to logout')) {
+      sessionStorage.clear();
+      localStorage.clear();
+      window.location.href = '/GraduationProject/api_front/login.html';
+    }
+  }
+
+  window.onload = function() {
+    const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+    if (!isLoggedIn) {
+      window.location.href = '/GraduationProject/api_front/login.html';
+    }
+  }
+</script>
+    <div class="container">
+      <aside class="sidebar">
+        <div class="logo-box">
+          <div class="logo-icon">🛞</div>
+          <h2>Smart Bins Admin</h2>
+        </div>
+
+        <ul class="menu">
+          <li class="active">
+            <a href="/GraduationProject/api_front/overview.html"><span class="icon">⌛</span> Overview</a>
+          </li>
+
+          <li>
+            <a href="/GraduationProject/api_front/tracking.html"
+              ><span class="icon">📍</span> Live Tracking</a
+            >
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/carts.html"
+              ><span class="icon">🛒</span> Carts Management</a
+            >
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/trips.html"><span class="icon">🗂</span> Trips & Logs</a>
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/alerts.html"><span class="icon">🔔</span> Alerts</a>
+          </li>
+          <li>
+            <a href="system.html"
+              ><span class="icon">⚙</span> System Configuration</a
+            >
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/admin.html"><span class="icon">🛡</span> Admin Tools</a>
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/account.html"
+              ><span class="icon">👤</span> Account Settings</a
+            >
+          </li>
+        </ul>
+        <div class="sidebar-footer">
+          <button class="logout-btn" onclick="logout()">
+            <span class="icon">🚪</span>
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <!-- Topbar -->
+        <div class="topbar">
+          <div class="topbar-left">
+            <h1 class="page-title">Overview Dashboard</h1>
+            <div class="breadcrumb">
+              <span class="current">Overview</span>
+            </div>
+          </div>
+          
+          <div class="topbar-right">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" id="searchInput" placeholder="Search bins, locations...">
+            </div>
+            
+            <div class="topbar-icons">
+              <button class="icon-btn" id="notificationBtn" onclick="toggleNotifications()">
+                <i class="fas fa-bell"></i>
+                <span class="badge">3</span>
+              </button>
+              
+              <button class="icon-btn" onclick="toggleTheme()">
+                <i class="fas fa-moon" id="themeIcon"></i>
+              </button>
+
+              <button class="icon-btn" onclick="toggleView()">
+                <i class="fas fa-th-large" id="viewIcon"></i>
+              </button>
+            </div>
+            
+            <div class="user-profile">
+              <img src="https://ui-avatars.com/api/?name=Admin+User&background=4873ff&color=fff" alt="User">
+              <div class="user-info">
+                <span class="user-name">Admin User</span>
+                <span class="user-role">Administrator</span>
+              </div>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications Dropdown -->
+        <div class="notifications-dropdown" id="notificationsDropdown">
+          <div class="notifications-header">
+            <h3>Notifications</h3>
+            <button onclick="clearNotifications()">Clear All</button>
+          </div>
+          <div class="notifications-list">
+            <div class="notification-item unread">
+              <div class="notification-icon red">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">Critical Alert: BIN-007</p>
+                <p class="notification-text">Low battery detected (15%)</p>
+                <span class="notification-time">10 mins ago</span>
+              </div>
+            </div>
+            <div class="notification-item unread">
+              <div class="notification-icon orange">
+                <i class="fas fa-fill"></i>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">BIN-001 Full</p>
+                <p class="notification-text">Fill level reached 95%</p>
+                <span class="notification-time">2 mins ago</span>
+              </div>
+            </div>
+            <div class="notification-item">
+              <div class="notification-icon green">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">Collection Completed</p>
+                <p class="notification-text">BIN-003 successfully emptied</p>
+                <span class="notification-time">45 mins ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="main-content">
+          <!-- Toast Notification -->
+          <div class="toast-container" id="toastContainer"></div>
+
+          <!-- Stats Cards -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon blue">
+                <i class="fas fa-robot"></i>
+              </div>
+              <div class="stat-title">Active Bins</div>
+              <div class="stat-value" id="activeBins">8</div>
+              <div class="stat-change positive">
+                <i class="fas fa-check-circle"></i>
+                <span>All systems operational</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon green">
+                <i class="fas fa-route"></i>
+              </div>
+              <div class="stat-title">Trips Today</div>
+              <div class="stat-value" id="tripsToday">28</div>
+              <div class="stat-change positive">
+                <i class="fas fa-arrow-up"></i>
+                <span>15% more than yesterday</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon orange">
+                <i class="fas fa-fill"></i>
+              </div>
+              <div class="stat-title">Average Fill Level</div>
+              <div class="stat-value" id="avgFillLevel">68<span style="font-size: 18px; color: #6b7280;">%</span></div>
+              <div class="stat-change positive">
+                <i class="fas fa-info-circle"></i>
+                <span>Optimal collection timing</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon red">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <div class="stat-title">Critical Alerts</div>
+              <div class="stat-value" id="criticalAlerts">2</div>
+              <div class="stat-change negative">
+                <i class="fas fa-arrow-up"></i>
+                <span>Requires attention</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts -->
+          <div class="charts-grid">
+            <div class="chart-card">
+              <div class="chart-header">
+                <h3 class="chart-title">Autonomous Collections</h3>
+                <div class="chart-actions">
+                  <div class="chart-filter">
+                    <button class="filter-btn active" onclick="updateChart('week')">Week</button>
+                    <button class="filter-btn" onclick="updateChart('month')">Month</button>
+                    <button class="filter-btn" onclick="updateChart('year')">Year</button>
+                  </div>
+                  <button class="icon-btn-small" onclick="exportChartData()" title="Export Data">
+                    <i class="fas fa-download"></i>
+                  </button>
+                </div>
+              </div>
+              <canvas id="tripsChart"></canvas>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-header">
+                <h3 class="chart-title">Bin Status</h3>
+              </div>
+              <canvas id="statusChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="activity-card">
+            <div class="chart-header">
+              <h3 class="chart-title">Recent Autonomous Activity</h3>
+              <div class="activity-actions">
+                <button class="filter-btn" onclick="refreshActivity()">
+                  <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <button class="filter-btn" onclick="exportTable()">
+                  <i class="fas fa-file-export"></i> Export
+                </button>
+                <button class="filter-btn" onclick="window.location.href='trips.html'">
+                  View All <i class="fas fa-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Desktop Table View -->
+            <div class="table-wrapper desktop-view">
+              <table class="activity-table">
+                <thead>
+                  <tr>
+                    <th onclick="sortTable(0)">
+                      Bin ID <i class="fas fa-sort"></i>
+                    </th>
+                    <th onclick="sortTable(1)">
+                      Location <i class="fas fa-sort"></i>
+                    </th>
+                    <th onclick="sortTable(2)">
+                      Fill Level <i class="fas fa-sort"></i>
+                    </th>
+                    <th onclick="sortTable(3)">
+                      Status <i class="fas fa-sort"></i>
+                    </th>
+                    <th onclick="sortTable(4)">
+                      Battery <i class="fas fa-sort"></i>
+                    </th>
+                    <th onclick="sortTable(5)">
+                      Last Action <i class="fas fa-sort"></i>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="activityTable">
+                  <tr>
+                    <td class="vehicle-id">BIN-001</td>
+                    <td>Al Gomhoria St, Mansoura</td>
+                    <td><span class="fill-indicator fill-high">95%</span></td>
+                    <td><span class="status-badge active">En Route to Center</span></td>
+                    <td><span class="battery-indicator battery-good">85%</span></td>
+                    <td>2 mins ago</td>
+                  </tr>
+                  <tr>
+                    <td class="vehicle-id">BIN-003</td>
+                    <td>Al Mashaya Area, Mansoura</td>
+                    <td><span class="fill-indicator fill-medium">68%</span></td>
+                    <td><span class="status-badge completed">Collecting</span></td>
+                    <td><span class="battery-indicator battery-good">92%</span></td>
+                    <td>15 mins ago</td>
+                  </tr>
+                  <tr>
+                    <td class="vehicle-id">BIN-005</td>
+                    <td>Toriel District, Mansoura</td>
+                    <td><span class="fill-indicator fill-low">32%</span></td>
+                    <td><span class="status-badge completed">Standby</span></td>
+                    <td><span class="battery-indicator battery-good">78%</span></td>
+                    <td>45 mins ago</td>
+                  </tr>
+                  <tr>
+                    <td class="vehicle-id">BIN-002</td>
+                    <td>Al Matar Area, Mansoura</td>
+                    <td><span class="fill-indicator fill-high">88%</span></td>
+                    <td><span class="status-badge active">Returning</span></td>
+                    <td><span class="battery-indicator battery-good">65%</span></td>
+                    <td>1 hour ago</td>
+                  </tr>
+                  <tr>
+                    <td class="vehicle-id">BIN-007</td>
+                    <td>Mit Khamis, Mansoura</td>
+                    <td><span class="fill-indicator fill-critical">12%</span></td>
+                    <td><span class="status-badge critical">Low Battery</span></td>
+                    <td><span class="battery-indicator battery-low">15%</span></td>
+                    <td>10 mins ago</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Mobile Card View -->
+            <div class="cards-view mobile-view" id="cardsView">
+              <!-- Will be populated by JS -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination">
+              <button class="pagination-btn" onclick="previousPage()" id="prevBtn">
+                <i class="fas fa-chevron-left"></i> Previous
+              </button>
+              <div class="pagination-info">
+                Page <span id="currentPage">1</span> of <span id="totalPages">1</span>
+              </div>
+              <button class="pagination-btn" onclick="nextPage()" id="nextBtn">
+                Next <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="/GraduationProject/api_front/api.js"></script>
+    <script src="/GraduationProject/api_front/overview.js"></script>
+  </body>
+</html>

@@ -1,0 +1,50 @@
+{
+    "name": "smart-bins/backend-api",
+    "version": "1.0.0",
+    "description": "Smart Bins System - Backend API for waste management tracking system with real-time monitoring",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Smart Bins Team",
+            "email": "team@smartbins.local"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-curl": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "files": [
+            "Helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "start": "php -S localhost:8080 -t .",
+        "test": "phpunit",
+        "dev": "php -S localhost:8080 -t .",
+        "serve": "php -S 0.0.0.0:8080 -t ."
+    },
+    "config": {
+        "platform": {
+            "php": "7.4"
+        },
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

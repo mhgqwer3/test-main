@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Tools - Smart Bins</title>
+    <link rel="stylesheet" href="/GraduationProject/CSS/style.css" />
+    <link rel="stylesheet" href="/GraduationProject/CSS/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  </head>
+  <body>
+    <script>
+  function logout() {
+    if (confirm('Are you sure you want to logout')) {
+      sessionStorage.clear();
+      localStorage.clear();
+      window.location.href = '/GraduationProject/api_front/login.html';
+    }
+  }
+
+  window.onload = function() {
+    const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+    if (!isLoggedIn) {
+      window.location.href = '/GraduationProject/api_front/login.html';
+    }
+  }
+</script>
+    <div class="container">
+      <aside class="sidebar">
+        <div class="logo-box">
+          <div class="logo-icon">🛞</div>
+          <h2>Smart Bins Admin</h2>
+        </div>
+
+        <ul class="menu">
+          <li>
+            <a href="/GraduationProject/api_front/overview.html"><span class="icon">⌛</span> Overview</a>
+          </li>
+
+          <li>
+            <a href="/GraduationProject/api_front/tracking.html"
+              ><span class="icon">📍</span> Live Tracking</a
+            >
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/carts.html"
+              ><span class="icon">🛒</span> Carts Management</a
+            >
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/trips.html"><span class="icon">🗂</span> Trips & Logs</a>
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/alerts.html"><span class="icon">🔔</span> Alerts</a>
+          </li>
+          <li>
+            <a href="system.html"
+              ><span class="icon">⚙</span> System Configuration</a
+            >
+          </li>
+          <li class="active">
+            <a href="/GraduationProject/api_front/admin.html"><span class="icon">🛡</span> Admin Tools</a>
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/account.html"
+              ><span class="icon">👤</span> Account Settings</a
+            >
+          </li>
+        </ul>
+        <div class="sidebar-footer">
+          <button class="logout-btn" onclick="logout()">
+            <span class="icon">🚪</span>
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <!-- Topbar -->
+        <div class="topbar">
+          <div class="topbar-left">
+            <h1 class="page-title">Admin Tools</h1>
+            <div class="breadcrumb">
+              <span class="current">System Administration & Management</span>
+            </div>
+          </div>
+          
+          <div class="topbar-right">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" id="searchAdmin" placeholder="Search users, logs...">
+            </div>
+            
+            <div class="topbar-icons">
+              <button class="icon-btn" id="adminNotificationBtn" title="Notifications" onclick="toggleAdminNotifications()">
+                <i class="fas fa-bell"></i>
+                <span class="badge">3</span>
+              </button>
+              <!-- Optional messages button
+              <button class="icon-btn">
+                <i class="fas fa-envelope"></i>
+                <span class="badge">5</span>
+              </button>
+              -->
+              <button class="icon-btn" title="Toggle Theme" onclick="toggleAdminTheme()">
+                <i class="fas fa-moon" id="adminThemeIcon"></i>
+              </button>
+              <button class="icon-btn" title="Toggle View" onclick="toggleAdminView()">
+                <i class="fas fa-th-large" id="adminViewIcon"></i>
+              </button>
+            </div>
+            
+            <div class="user-profile">
+              <img src="https://ui-avatars.com/api/?name=Admin+User&background=4873ff&color=fff" alt="User">
+              <div class="user-info">
+                <span class="user-name">Admin User</span>
+                <span class="user-role">Administrator</span>
+              </div>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications Dropdown -->
+        <div class="notifications-dropdown" id="adminNotificationsDropdown">
+          <div class="notifications-header">
+            <h3>Admin Notifications</h3>
+            <button onclick="clearAdminNotifications()">Clear All</button>
+          </div>
+          <div class="notifications-list">
+            <div class="notification-item unread">
+              <div class="notification-icon red">
+                <i class="fas fa-user-shield"></i>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">New admin activity</p>
+                <p class="notification-text">User Nader Elsayed updated system roles</p>
+                <span class="notification-time">3 mins ago</span>
+              </div>
+            </div>
+            <div class="notification-item">
+              <div class="notification-icon orange">
+                <i class="fas fa-file-lines"></i>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">Critical log recorded</p>
+                <p class="notification-text">Database connection lost and recovered</p>
+                <span class="notification-time">25 mins ago</span>
+              </div>
+            </div>
+            <div class="notification-item">
+              <div class="notification-icon blue">
+                <i class="fas fa-database"></i>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">Backup completed</p>
+                <p class="notification-text">Manual backup finished successfully</p>
+                <span class="notification-time">1 hour ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="main-content">
+          <!-- Admin Tabs -->
+          <div class="admin-tabs">
+            <button class="tab-btn active" data-tab="users" onclick="switchTab('users')">
+              <i class="fas fa-users"></i>
+              <span>User Management</span>
+            </button>
+            <button class="tab-btn" data-tab="roles" onclick="switchTab('roles')">
+              <i class="fas fa-user-shield"></i>
+              <span>Roles & Permissions</span>
+            </button>
+            <button class="tab-btn" data-tab="logs" onclick="switchTab('logs')">
+              <i class="fas fa-file-lines"></i>
+              <span>System Logs</span>
+            </button>
+            <button class="tab-btn" data-tab="backup" onclick="switchTab('backup')">
+              <i class="fas fa-database"></i>
+              <span>Backup & Restore</span>
+            </button>
+            <button class="tab-btn" data-tab="settings" onclick="switchTab('settings')">
+              <i class="fas fa-sliders"></i>
+              <span>System Settings</span>
+            </button>
+          </div>
+
+          <!-- Tab Content -->
+          <div class="tab-content active" id="users-tab">
+            <!-- User Management -->
+            <div class="section-header">
+              <h2>User Management</h2>
+              <div class="section-actions">
+                <button class="primary-btn" onclick="openAddUserModal()">
+                  <i class="fas fa-user-plus"></i>
+                  Add New User
+                </button>
+                <button class="secondary-btn" onclick="exportUsers()">
+                  <i class="fas fa-download"></i>
+                  Export
+                </button>
+              </div>
+            </div>
+
+            <div class="users-table-container">
+              <table class="admin-table" id="usersTable">
+                <thead>
+                  <tr>
+                    <th>
+                      <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                    </th>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Last Active</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <!-- Users will be loaded dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="tab-content" id="roles-tab">
+            <!-- Roles & Permissions -->
+            <div class="section-header">
+              <h2>Roles & Permissions</h2>
+              <div class="section-actions">
+                <button class="primary-btn" onclick="openAddRoleModal()">
+                  <i class="fas fa-plus"></i>
+                  Create Role
+                </button>
+              </div>
+            </div>
+
+            <div class="roles-grid" id="rolesGrid">
+              <!-- Roles will be loaded dynamically -->
+            </div>
+          </div>
+
+          <div class="tab-content" id="logs-tab">
+            <!-- System Logs -->
+            <div class="section-header">
+              <h2>System Logs</h2>
+              <div class="section-actions">
+                <select class="filter-select" id="logTypeFilter" onchange="filterLogs()">
+                  <option value="all">All Types</option>
+                  <option value="info">Info</option>
+                  <option value="warning">Warning</option>
+                  <option value="error">Error</option>
+                  <option value="critical">Critical</option>
+                </select>
+                <button class="secondary-btn" onclick="clearLogs()">
+                  <i class="fas fa-trash"></i>
+                  Clear Logs
+                </button>
+                <button class="secondary-btn" onclick="downloadLogs()">
+                  <i class="fas fa-download"></i>
+                  Download
+                </button>
+              </div>
+            </div>
+
+            <div class="logs-container" id="logsContainer">
+              <!-- Logs will be loaded dynamically -->
+            </div>
+          </div>
+
+          <div class="tab-content" id="backup-tab">
+            <!-- Backup & Restore -->
+            <div class="section-header">
+              <h2>Backup & Restore</h2>
+            </div>
+
+            <div class="backup-grid">
+              <div class="backup-card">
+                <div class="backup-card-header">
+                  <i class="fas fa-cloud-arrow-up"></i>
+                  <h3>Create Backup</h3>
+                </div>
+                <p>Create a full system backup including database, configurations, and user data.</p>
+                <button class="primary-btn" onclick="createBackup()">
+                  <i class="fas fa-download"></i>
+                  Create Backup
+                </button>
+              </div>
+
+              <div class="backup-card">
+                <div class="backup-card-header">
+                  <i class="fas fa-cloud-arrow-down"></i>
+                  <h3>Restore Backup</h3>
+                </div>
+                <p>Restore system from a previous backup file. This will overwrite current data.</p>
+                <button class="secondary-btn" onclick="openRestoreModal()">
+                  <i class="fas fa-upload"></i>
+                  Restore Backup
+                </button>
+              </div>
+
+              <div class="backup-card">
+                <div class="backup-card-header">
+                  <i class="fas fa-clock-rotate-left"></i>
+                  <h3>Auto Backup</h3>
+                </div>
+                <p>Configure automatic backup schedule and retention policies.</p>
+                <button class="secondary-btn" onclick="configureAutoBackup()">
+                  <i class="fas fa-gear"></i>
+                  Configure
+                </button>
+              </div>
+            </div>
+
+            <div class="section-header" style="margin-top: 30px;">
+              <h2>Backup History</h2>
+            </div>
+
+            <div class="backup-history" id="backupHistory">
+              <!-- Backup history will be loaded dynamically -->
+            </div>
+          </div>
+
+          <div class="tab-content" id="settings-tab">
+            <!-- System Settings -->
+            <div class="section-header">
+              <h2>System Settings</h2>
+              <div class="section-actions">
+                <button class="primary-btn" onclick="saveSettings()">
+                  <i class="fas fa-save"></i>
+                  Save Changes
+                </button>
+              </div>
+            </div>
+
+            <div class="settings-grid">
+              <div class="settings-card">
+                <h3>
+                  <i class="fas fa-globe"></i>
+                  General Settings
+                </h3>
+                <div class="setting-item">
+                  <label>System Name</label>
+                  <input type="text" value="Smart Bins Management System" class="setting-input">
+                </div>
+                <div class="setting-item">
+                  <label>Time Zone</label>
+                  <select class="setting-input">
+                    <option>UTC+2 (Cairo)</option>
+                    <option>UTC+0 (GMT)</option>
+                    <option>UTC-5 (EST)</option>
+                  </select>
+                </div>
+                <div class="setting-item">
+                  <label>Language</label>
+                  <select class="setting-input">
+                    <option>English</option>
+                    <option>العربية</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="settings-card">
+                <h3>
+                  <i class="fas fa-bell"></i>
+                  Notifications
+                </h3>
+                <div class="setting-item-toggle">
+                  <label>Email Notifications</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="setting-item-toggle">
+                  <label>SMS Alerts</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="setting-item-toggle">
+                  <label>Push Notifications</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="settings-card">
+                <h3>
+                  <i class="fas fa-shield-halved"></i>
+                  Security
+                </h3>
+                <div class="setting-item-toggle">
+                  <label>Two-Factor Authentication</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="setting-item-toggle">
+                  <label>IP Whitelist</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="setting-item">
+                  <label>Session Timeout (minutes)</label>
+                  <input type="number" value="30" class="setting-input">
+                </div>
+              </div>
+
+              <div class="settings-card">
+                <h3>
+                  <i class="fas fa-robot"></i>
+                  System Performance
+                </h3>
+                <div class="setting-item-toggle">
+                  <label>Auto Refresh Data</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="setting-item">
+                  <label>Refresh Interval (seconds)</label>
+                  <input type="number" value="30" class="setting-input">
+                </div>
+                <div class="setting-item">
+                  <label>Max Records Per Page</label>
+                  <input type="number" value="50" class="setting-input">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Modal -->
+    <div id="adminModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modalTitle">Modal Title</h2>
+          <button class="close-btn" onclick="closeModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body" id="modalBody">
+          <!-- Modal content will be loaded dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <script src="/GraduationProject/api_front/api.js"></script>
+    <script src="/GraduationProject/api_front/admin.js"></script>
+  </body>
+</html>

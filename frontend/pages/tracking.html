@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Live Tracking - Smart Bins</title>
+    <link rel="stylesheet" href="/CSS/style.css" />
+    <link rel="stylesheet" href="/CSS/tracking.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Leaflet CSS for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  </head>
+  <body>
+    <script>
+  function logout() {
+    if (confirm('Are you sure you want to logout')) {
+      sessionStorage.clear();
+      localStorage.clear();
+      window.location.href = '/pages/login.html';
+    }
+  }
+
+  window.onload = function() {
+    const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+    if (!isLoggedIn) {
+      window.location.href = '/pages/login.html';
+    }
+  }
+</script>
+    <div class="container">
+      <aside class="sidebar">
+        <div class="logo-box">
+          <div class="logo-icon">🛞</div>
+          <h2>Smart Bins Admin</h2>
+        </div>
+
+        <ul class="menu">
+          <li>
+            <a href="/pages/overview.html"><span class="icon">⌛</span> Overview</a>
+          </li>
+          <li class="active">
+            <a href="/pages/tracking.html"><span class="icon">📍</span> Live Tracking</a>
+          </li>
+          <li>
+            <a href="/pages/carts.html"><span class="icon">🛒</span> Carts Management</a>
+          </li>
+          <li>
+            <a href="/pages/trips.html"><span class="icon">🗂</span> Trips & Logs</a>
+          </li>
+          <li>
+            <a href="/pages/alerts.html"><span class="icon">🔔</span> Alerts</a>
+          </li>
+          <li>
+            <a href="system.html"><span class="icon">⚙</span> System Configuration</a>
+          </li>
+          <li>
+            <a href="/pages/admin.html"><span class="icon">🛡</span> Admin Tools</a>
+          </li>
+          <li>
+            <a href="/pages/account.html"><span class="icon">👤</span> Account Settings</a>
+          </li>
+        </ul>
+        <div class="sidebar-footer">
+          <button class="logout-btn" onclick="logout()">
+            <span class="icon">🚪</span>
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <!-- Topbar -->
+        <div class="topbar">
+          <div class="topbar-left">
+            <h1 class="page-title">Live Tracking</h1>
+            <div class="breadcrumb">
+              <span class="current">Real-time Location Monitoring</span>
+            </div>
+          </div>
+          
+          <div class="topbar-right">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" id="searchBin" placeholder="Search bin ID, location...">
+            </div>
+            
+            <div class="topbar-icons">
+              <button class="icon-btn" id="notificationBtn" onclick="toggleNotifications()">
+                <i class="fas fa-bell"></i>
+                <span class="badge">3</span>
+              </button>
+              
+              <button class="icon-btn" onclick="toggleTheme()">
+                <i class="fas fa-moon" id="themeIcon"></i>
+              </button>
+
+              <!-- <button class="icon-btn" onclick="toggleViewMode()">
+                <i class="fas fa-map" id="viewIcon"></i>
+              </button> -->
+            </div>
+            
+            <div class="user-profile">
+              <img src="https://ui-avatars.com/api/?name=Admin+User&background=4873ff&color=fff" alt="User">
+              <div class="user-info">
+                <span class="user-name">Admin User</span>
+                <span class="user-role">Administrator</span>
+              </div>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications Dropdown -->
+        <div class="notifications-dropdown" id="notificationsDropdown">
+          <div class="notifications-header">
+            <h3>Live Notifications</h3>
+            <button onclick="clearNotifications()">Clear All</button>
+          </div>
+          <div class="notifications-list">
+            <div class="notification-item unread">
+              <div class="notification-icon blue">
+                <i class="fas fa-arrow-right"></i>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">BIN-001 Moving</p>
+                <p class="notification-text">En route to collection center</p>
+                <span class="notification-time">2 mins ago</span>
+              </div>
+            </div>
+            <div class="notification-item unread">
+              <div class="notification-icon orange">
+                <i class="fas fa-fill"></i>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">BIN-008 Full</p>
+                <p class="notification-text">Fill level reached 95%</p>
+                <span class="notification-time">1 min ago</span>
+              </div>
+            </div>
+            <div class="notification-item">
+              <div class="notification-icon green">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">BIN-002 Active</p>
+                <p class="notification-text">Collection in progress</p>
+                <span class="notification-time">5 mins ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="main-content">
+          <!-- Toast Container -->
+          <div class="toast-container" id="toastContainer"></div>
+
+          <!-- Stats Bar -->
+          <div class="tracking-stats">
+            <div class="stat-item">
+              <div class="stat-icon active">
+                <i class="fas fa-circle"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Active Now</span>
+                <span class="stat-value" id="activeBinsCount">8</span>
+              </div>
+            </div>
+
+            <div class="stat-item">
+              <div class="stat-icon moving">
+                <i class="fas fa-arrow-right"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Moving</span>
+                <span class="stat-value" id="movingBinsCount">3</span>
+              </div>
+            </div>
+
+            <div class="stat-item">
+              <div class="stat-icon idle">
+                <i class="fas fa-pause"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Idle</span>
+                <span class="stat-value" id="idleBinsCount">5</span>
+              </div>
+            </div>
+
+            <div class="stat-item">
+              <div class="stat-icon offline">
+                <i class="fas fa-circle-xmark"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Offline</span>
+                <span class="stat-value" id="offlineBinsCount">4</span>
+              </div>
+            </div>
+
+            <button class="refresh-btn" onclick="refreshTracking()">
+              <i class="fas fa-sync-alt"></i>
+              <span>Refresh</span>
+            </button>
+          </div>
+
+          <!-- Main Tracking Layout -->
+          <div class="tracking-layout" id="trackingLayout">
+            <!-- Map Section -->
+            <div class="map-container">
+              <div class="map-header">
+                <h3>Live Map</h3>
+                <div class="map-controls">
+                  <button class="map-control-btn" onclick="centerMap()" title="Center Map">
+                    <i class="fas fa-crosshairs"></i>
+                  </button>
+                  <button class="map-control-btn" onclick="toggleHeatmap()" title="Toggle Heatmap">
+                    <i class="fas fa-fire"></i>
+                  </button>
+                  <button class="map-control-btn" onclick="toggleFullscreen()" title="Fullscreen">
+                    <i class="fas fa-expand"></i>
+                  </button>
+                </div>
+              </div>
+              <div id="map" class="map"></div>
+              
+              <!-- Map Legend -->
+              <div class="map-legend">
+                <div class="legend-item">
+                  <span class="legend-marker active"></span>
+                  <span>Active</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-marker moving"></span>
+                  <span>Moving</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-marker idle"></span>
+                  <span>Idle</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-marker offline"></span>
+                  <span>Offline</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bins List Section -->
+            <div class="bins-list-container">
+              <div class="bins-list-header">
+                <h3>Active Bins (<span id="binsCount">8</span>)</h3>
+                <div class="header-actions">
+                  <select class="sort-select" id="sortSelect" onchange="sortBins()">
+                    <option value="id">Sort by ID</option>
+                    <option value="fill">Sort by Fill Level</option>
+                    <option value="battery">Sort by Battery</option>
+                    <option value="status">Sort by Status</option>
+                  </select>
+                  <button class="icon-btn-small" onclick="exportBinsData()" title="Export Data">
+                    <i class="fas fa-download"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="active">Active</button>
+                <button class="filter-btn" data-filter="moving">Moving</button>
+                <button class="filter-btn" data-filter="idle">Idle</button>
+              </div>
+
+              <div id="binsList" class="bins-list">
+                <!-- Bins will be dynamically loaded here -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Bin Details Modal -->
+    <div id="binModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Bin Details</h2>
+          <button class="modal-close" onclick="closeBinModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body" id="binModalBody">
+          <!-- Details populated by JS -->
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn secondary" onclick="closeBinModal()">Close</button>
+          <button class="modal-btn primary" onclick="trackBin()">
+            <i class="fas fa-route"></i>
+            Track Route
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leaflet JS for Maps -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/JAVASCRIPT/tracking.js"></script>
+  </body>
+</html>

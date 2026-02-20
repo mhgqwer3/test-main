@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alerts & Notifications</title>
+    <link rel="stylesheet" href="/GraduationProject/CSS/style.css" />
+    <link rel="stylesheet" href="/GraduationProject/CSS/alerts.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  </head>
+  <body>
+    <script>
+      function logout() {
+        if (confirm('Are you sure you want to logout')) {
+          sessionStorage.clear();
+          localStorage.clear();
+          window.location.href = '/GraduationProject/api_front/login.html';
+        }
+      }
+
+      window.onload = function() {
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        if (!isLoggedIn) {
+          window.location.href = '/GraduationProject/api_front/login.html';
+        }
+      }
+    </script>
+    
+    <div class="container">
+      <aside class="sidebar">
+        <div class="logo-box">
+          <div class="logo-icon">🛞</div>
+          <h2>Smart Bins Admin</h2>
+        </div>
+
+        <ul class="menu">
+          <li>
+            <a href="/GraduationProject/api_front/overview.html"><span class="icon">⌛</span> Overview</a>
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/tracking.html"><span class="icon">📍</span> Live Tracking</a>
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/carts.html"><span class="icon">🛒</span> Carts Management</a>
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/trips.html"><span class="icon">🗂</span> Trips & Logs</a>
+          </li>
+          <li class="active">
+            <a href="/GraduationProject/api_front/alerts.html"><span class="icon">🔔</span> Alerts</a>
+          </li>
+          <li>
+            <a href="system.html"><span class="icon">⚙</span> System Configuration</a>
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/admin.html"><span class="icon">🛡</span> Admin Tools</a>
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/account.html"><span class="icon">👤</span> Account Settings</a>
+          </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+          <button class="logout-btn" onclick="logout()">
+            <span class="icon">🚪</span>
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <!-- Topbar -->
+        <div class="topbar">
+          <div class="topbar-left">
+            <h1 class="page-title">Alerts & Notifications</h1>
+            <div class="breadcrumb">
+              <span>Dashboard</span>
+              <i class="fas fa-chevron-right"></i>
+              <span class="current">Alerts</span>
+            </div>
+          </div>
+          
+          <div class="topbar-right">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" id="searchInput" placeholder="Search alerts, bins...">
+            </div>
+            
+            <div class="topbar-icons">
+              <button class="icon-btn" id="notificationBtn" onclick="toggleNotifications()">
+                <i class="fas fa-bell"></i>
+                <span class="badge">3</span>
+              </button>
+              
+              <button class="icon-btn" onclick="toggleTheme()">
+                <i class="fas fa-moon" id="themeIcon"></i>
+              </button>
+
+              <button class="icon-btn" onclick="exportAlerts()" title="Export Alerts">
+                <i class="fas fa-download"></i>
+              </button>
+            </div>
+            
+            <div class="user-profile">
+              <img src="https://ui-avatars.com/api/?name=Admin+User&background=4873ff&color=fff" alt="User">
+              <div class="user-info">
+                <span class="user-name">Admin User</span>
+                <span class="user-role">Administrator</span>
+              </div>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications Dropdown -->
+        <div class="notifications-dropdown" id="notificationsDropdown">
+          <div class="notifications-header">
+            <h3>Notifications</h3>
+            <button onclick="clearNotifications()">Clear All</button>
+          </div>
+          <div class="notifications-list">
+            <div class="notification-item unread">
+              <div class="notification-icon red">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">Critical Alert: BIN-007</p>
+                <p class="notification-text">Low battery detected (15%)</p>
+                <span class="notification-time">10 mins ago</span>
+              </div>
+            </div>
+            <div class="notification-item unread">
+              <div class="notification-icon orange">
+                <i class="fas fa-fill"></i>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">BIN-001 Full</p>
+                <p class="notification-text">Fill level reached 95%</p>
+                <span class="notification-time">2 mins ago</span>
+              </div>
+            </div>
+            <div class="notification-item">
+              <div class="notification-icon green">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">Collection Completed</p>
+                <p class="notification-text">BIN-003 successfully emptied</p>
+                <span class="notification-time">45 mins ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="main-content">
+          <!-- Toast Notification -->
+          <div class="toast-container" id="toastContainer"></div>
+
+          <!-- Alert Stats -->
+          <div class="alert-stats-grid">
+            <div class="alert-stat-card critical">
+              <div class="stat-icon">
+                <i class="fas fa-exclamation-circle"></i>
+              </div>
+              <div class="stat-info">
+                <div class="stat-title">Critical Alerts</div>
+                <div class="stat-value" id="criticalCount">5</div>
+                <div class="stat-change">Requires immediate action</div>
+              </div>
+              <div class="stat-pulse"></div>
+            </div>
+
+            <div class="alert-stat-card warning">
+              <div class="stat-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <div class="stat-info">
+                <div class="stat-title">Warnings</div>
+                <div class="stat-value" id="warningCount">12</div>
+                <div class="stat-change">Monitor closely</div>
+              </div>
+            </div>
+
+            <div class="alert-stat-card info">
+              <div class="stat-icon">
+                <i class="fas fa-info-circle"></i>
+              </div>
+              <div class="stat-info">
+                <div class="stat-title">Information</div>
+                <div class="stat-value" id="infoCount">28</div>
+                <div class="stat-change">System notifications</div>
+              </div>
+            </div>
+
+            <div class="alert-stat-card success">
+              <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="stat-info">
+                <div class="stat-title">Resolved Today</div>
+                <div class="stat-value" id="resolvedCount">42</div>
+                <div class="stat-change">Successfully handled</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alert Controls -->
+          <div class="alerts-toolbar">
+            <div class="filter-group">
+              <button class="filter-chip active" data-filter="all">
+                All Alerts <span class="chip-count">45</span>
+              </button>
+              <button class="filter-chip critical-chip" data-filter="critical">
+                <i class="fas fa-exclamation-circle"></i>
+                Critical <span class="chip-count">5</span>
+              </button>
+              <button class="filter-chip warning-chip" data-filter="warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                Warning <span class="chip-count">12</span>
+              </button>
+              <button class="filter-chip info-chip" data-filter="info">
+                <i class="fas fa-info-circle"></i>
+                Info <span class="chip-count">28</span>
+              </button>
+            </div>
+
+            <div class="action-group">
+              <select class="filter-select" id="timeFilter">
+                <option value="today">Today</option>
+                <option value="week" selected>This Week</option>
+                <option value="month">This Month</option>
+                <option value="all">All Time</option>
+              </select>
+
+              <select class="filter-select" id="statusFilter">
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="acknowledged">Acknowledged</option>
+                <option value="resolved">Resolved</option>
+              </select>
+
+              <button class="action-btn primary" onclick="markAllAsRead()">
+                <i class="fas fa-check-double"></i>
+                Mark All Read
+              </button>
+
+              <button class="action-btn" onclick="refreshAlerts()">
+                <i class="fas fa-sync-alt"></i>
+                Refresh
+              </button>
+
+              <button class="action-btn" onclick="openConfigModal()">
+                <i class="fas fa-cog"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Alerts Container -->
+          <div class="alerts-container">
+            <!-- Active Alerts -->
+            <div class="alerts-section">
+              <div class="section-header">
+                <div class="section-title">
+                  <i class="fas fa-bell"></i>
+                  <h3>Active Alerts</h3>
+                </div>
+                <span class="section-count" id="activeAlertsCount">17</span>
+              </div>
+              <div class="alerts-list" id="activeAlertsList">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <!-- Acknowledged Alerts -->
+            <div class="alerts-section">
+              <div class="section-header">
+                <div class="section-title">
+                  <i class="fas fa-check"></i>
+                  <h3>Acknowledged</h3>
+                </div>
+                <span class="section-count" id="acknowledgedCount">10</span>
+              </div>
+              <div class="alerts-list" id="acknowledgedAlertsList">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <!-- Resolved Alerts -->
+            <div class="alerts-section collapsed">
+              <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-title">
+                  <i class="fas fa-check-double"></i>
+                  <h3>
+                    Resolved
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                  </h3>
+                </div>
+                <span class="section-count" id="resolvedAlertsCount">18</span>
+              </div>
+              <div class="alerts-list" id="resolvedAlertsList">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Alert Details Modal -->
+    <div id="alertModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Alert Details</h2>
+          <button class="modal-close" onclick="closeModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body" id="alertModalBody"></div>
+        <div class="modal-footer">
+          <button class="modal-btn secondary" onclick="closeModal()">Close</button>
+          <button class="modal-btn primary" onclick="acknowledgeAlert()" id="acknowledgeBtn">
+            <i class="fas fa-check"></i> Acknowledge
+          </button>
+          <button class="modal-btn success" onclick="resolveAlert()" id="resolveBtn">
+            <i class="fas fa-check-double"></i> Resolve
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Config Modal -->
+    <div id="configModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2><i class="fas fa-cog"></i> Alert Settings</h2>
+          <button class="modal-close" onclick="closeConfigModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="config-section">
+            <h3>Notification Preferences</h3>
+            <p class="config-desc">Choose which alerts you want to receive</p>
+            
+            <div class="config-item">
+              <div class="config-info">
+                <div class="config-icon critical">
+                  <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <div class="config-label">
+                  <strong>Critical Alerts</strong>
+                  <span>Immediate notifications for critical issues</span>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="config-item">
+              <div class="config-info">
+                <div class="config-icon warning">
+                  <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="config-label">
+                  <strong>Warning Alerts</strong>
+                  <span>Warnings about potential issues</span>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="config-item">
+              <div class="config-info">
+                <div class="config-icon info">
+                  <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="config-label">
+                  <strong>Info Notifications</strong>
+                  <span>General system updates</span>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="config-section">
+            <h3>Alert Delivery</h3>
+            <p class="config-desc">How to receive alerts</p>
+            
+            <div class="config-item">
+              <div class="config-info">
+                <div class="config-icon info">
+                  <i class="fas fa-desktop"></i>
+                </div>
+                <div class="config-label">
+                  <strong>Browser Notifications</strong>
+                  <span>Desktop notifications</span>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="config-item">
+              <div class="config-info">
+                <div class="config-icon info">
+                  <i class="fas fa-envelope"></i>
+                </div>
+                <div class="config-label">
+                  <strong>Email Notifications</strong>
+                  <span>Send to email</span>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn secondary" onclick="closeConfigModal()">Cancel</button>
+          <button class="modal-btn primary" onclick="saveSettings()">
+            <i class="fas fa-save"></i> Save Settings
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/GraduationProject/api_front/api.js"></script><script src="/GraduationProject/api_front/alerts.js"></script>
+  </body>
+</html>

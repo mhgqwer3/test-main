@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account Settings - Smart Bins</title>
+    <link rel="stylesheet" href="/GraduationProject/CSS/style.css" />
+    <link rel="stylesheet" href="/GraduationProject/CSS/account.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  </head>
+  <body>
+    <script>
+  function logout() {
+    if (confirm('Are you sure you want to logout')) {
+      sessionStorage.clear();
+      localStorage.clear();
+      window.location.href = '/GraduationProject/api_front/login.html';
+    }
+  }
+
+  window.onload = function() {
+    const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+    if (!isLoggedIn) {
+      window.location.href = '/GraduationProject/api_front/login.html';
+    }
+  }
+</script>
+    <div class="container">
+      <aside class="sidebar">
+        <div class="logo-box">
+          <div class="logo-icon">🛞</div>
+          <h2>Smart Bins Admin</h2>
+        </div>
+
+        <ul class="menu">
+          <li>
+            <a href="/GraduationProject/api_front/overview.html"><span class="icon">⌛</span> Overview</a>
+          </li>
+
+          <li>
+            <a href="/GraduationProject/api_front/tracking.html"
+              ><span class="icon">📍</span> Live Tracking</a
+            >
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/carts.html"
+              ><span class="icon">🛒</span> Carts Management</a
+            >
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/trips.html"><span class="icon">🗂</span> Trips & Logs</a>
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/alerts.html"><span class="icon">🔔</span> Alerts</a>
+          </li>
+          <li>
+            <a href="system.html"
+              ><span class="icon">⚙</span> System Configuration</a
+            >
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/admin.html"><span class="icon">🛡</span> Admin Tools</a>
+          </li>
+          <li class="active">
+            <a href="/GraduationProject/api_front/account.html"
+              ><span class="icon">👤</span> Account Settings</a
+            >
+          </li>
+        </ul>
+        <div class="sidebar-footer">
+          <button class="logout-btn" onclick="logout()">
+            <span class="icon">🚪</span>
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <!-- Topbar-->
+        <div class="topbar">
+          <div class="topbar-left">
+            <h1 class="page-title">Account Settings</h1>
+            <div class="breadcrumb">
+              <span class="current">Personal Information & Preferences</span>
+            </div>
+          </div>
+          
+          <div class="topbar-right">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" id="accountSearchInput" placeholder="Search settings...">
+            </div>
+            
+            <div class="topbar-icons">
+              <button class="icon-btn" id="accountNotificationBtn" title="Notifications" onclick="toggleAccountNotifications()">
+                <i class="fas fa-bell"></i>
+                <span class="badge">3</span>
+              </button>
+              <!-- Optional messages button
+              <button class="icon-btn">
+                <i class="fas fa-envelope"></i>
+                <span class="badge">5</span>
+              </button>
+              -->
+              <button class="icon-btn" title="Toggle Theme" onclick="toggleAccountTheme()">
+                <i class="fas fa-moon" id="accountThemeIcon"></i>
+              </button>
+              <button class="icon-btn" title="Toggle View" onclick="toggleAccountView()">
+                <i class="fas fa-th-large" id="accountViewIcon"></i>
+              </button>
+            </div>
+            
+            <div class="user-profile">
+              <img src="https://ui-avatars.com/api/?name=Admin+User&background=4873ff&color=fff" alt="User">
+              <div class="user-info">
+                <span class="user-name">Admin User</span>
+                <span class="user-role">Administrator</span>
+              </div>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications Dropdown -->
+        <div class="notifications-dropdown" id="accountNotificationsDropdown">
+          <div class="notifications-header">
+            <h3>Account Notifications</h3>
+            <button onclick="clearAccountNotifications()">Clear All</button>
+          </div>
+          <div class="notifications-list">
+            <div class="notification-item unread">
+              <div class="notification-icon blue">
+                <i class="fas fa-user"></i>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">Profile updated</p>
+                <p class="notification-text">Your profile information was saved</p>
+                <span class="notification-time">Just now</span>
+              </div>
+            </div>
+            <div class="notification-item">
+              <div class="notification-icon green">
+                <i class="fas fa-shield-halved"></i>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">Security check passed</p>
+                <p class="notification-text">Recent login activity looks normal</p>
+                <span class="notification-time">30 mins ago</span>
+              </div>
+            </div>
+            <div class="notification-item">
+              <div class="notification-icon orange">
+                <i class="fas fa-bell"></i>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">Notification preferences changed</p>
+                <p class="notification-text">System alerts email frequency updated</p>
+                <span class="notification-time">2 hours ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="main-content">
+          <!-- Settings Navigation -->
+          <div class="settings-nav">
+            <button class="settings-nav-btn active" data-section="profile" onclick="switchSection('profile')">
+              <i class="fas fa-user"></i>
+              <span>Profile</span>
+            </button>
+            <button class="settings-nav-btn" data-section="security" onclick="switchSection('security')">
+              <i class="fas fa-shield-halved"></i>
+              <span>Security</span>
+            </button>
+            <button class="settings-nav-btn" data-section="notifications" onclick="switchSection('notifications')">
+              <i class="fas fa-bell"></i>
+              <span>Notifications</span>
+            </button>
+            <button class="settings-nav-btn" data-section="preferences" onclick="switchSection('preferences')">
+              <i class="fas fa-sliders"></i>
+              <span>Preferences</span>
+            </button>
+            <button class="settings-nav-btn" data-section="privacy" onclick="switchSection('privacy')">
+              <i class="fas fa-lock"></i>
+              <span>Privacy</span>
+            </button>
+          </div>
+
+          <!-- Settings Content -->
+          <div class="settings-content">
+            
+            <!-- Profile Section -->
+            <div class="settings-section active" id="profile-section">
+              <div class="section-header">
+                <h2>Profile Information</h2>
+                <button class="primary-btn" onclick="saveProfile()">
+                  <i class="fas fa-save"></i>
+                  Save Changes
+                </button>
+              </div>
+
+              <div class="profile-card">
+                <div class="profile-header">
+                  <div class="profile-avatar-section">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=4873ff&color=fff&size=120" alt="Profile" class="profile-avatar" id="profileAvatar">
+                    <div class="avatar-upload">
+                      <input type="file" id="avatarInput" accept="image/*" onchange="uploadAvatar()" style="display: none;">
+                      <button class="avatar-upload-btn" onclick="document.getElementById('avatarInput').click()">
+                        <i class="fas fa-camera"></i>
+                        Change Photo
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="profile-info">
+                    <h3 id="profileName">Admin User</h3>
+                    <p class="profile-role">Administrator</p>
+                    <div class="profile-badges">
+                      <span class="profile-badge verified">
+                        <i class="fas fa-check-circle"></i>
+                        Verified
+                      </span>
+                      <span class="profile-badge active">
+                        <i class="fas fa-circle"></i>
+                        Active
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="profile-form">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Full Name</label>
+                      <input type="text" id="fullName" value="Admin User" class="form-input">
+                    </div>
+                    <div class="form-group">
+                      <label>Username</label>
+                      <input type="text" id="username" value="admin.user" class="form-input">
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Email Address</label>
+                      <input type="email" id="email" value="admin@smartbins.com" class="form-input">
+                    </div>
+                    <div class="form-group">
+                      <label>Phone Number</label>
+                      <input type="tel" id="phone" value="+20 123 456 7890" class="form-input">
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Job Title</label>
+                      <input type="text" id="jobTitle" value="System Administrator" class="form-input">
+                    </div>
+                    <div class="form-group">
+                      <label>Department</label>
+                      <select id="department" class="form-input">
+                        <option>IT & Operations</option>
+                        <option>Management</option>
+                        <option>Logistics</option>
+                        <option>Customer Service</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Bio</label>
+                    <textarea id="bio" rows="4" class="form-input" placeholder="Tell us about yourself...">Experienced system administrator specializing in smart waste management solutions.</textarea>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Location</label>
+                      <input type="text" id="location" value="Cairo, Egypt" class="form-input">
+                    </div>
+                    <div class="form-group">
+                      <label>Time Zone</label>
+                      <select id="timezone" class="form-input">
+                        <option>UTC+2 (Cairo)</option>
+                        <option>UTC+0 (GMT)</option>
+                        <option>UTC+3 (Moscow)</option>
+                        <option>UTC-5 (EST)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Security Section -->
+            <div class="settings-section" id="security-section">
+              <div class="section-header">
+                <h2>Security Settings</h2>
+              </div>
+
+              <div class="security-cards">
+                <div class="security-card">
+                  <div class="security-card-header">
+                    <div>
+                      <h3>Change Password</h3>
+                      <p>Update your password regularly to keep your account secure</p>
+                    </div>
+                    <i class="fas fa-key security-icon"></i>
+                  </div>
+                  <div class="security-card-body">
+                    <div class="form-group">
+                      <label>Current Password</label>
+                      <input type="password" id="currentPassword" class="form-input" placeholder="Enter current password">
+                    </div>
+                    <div class="form-group">
+                      <label>New Password</label>
+                      <input type="password" id="newPassword" class="form-input" placeholder="Enter new password">
+                    </div>
+                    <div class="form-group">
+                      <label>Confirm New Password</label>
+                      <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm new password">
+                    </div>
+                    <button class="primary-btn" onclick="changePassword()">
+                      <i class="fas fa-lock"></i>
+                      Update Password
+                    </button>
+                  </div>
+                </div>
+
+                <div class="security-card">
+                  <div class="security-card-header">
+                    <div>
+                      <h3>Two-Factor Authentication</h3>
+                      <p>Add an extra layer of security to your account</p>
+                    </div>
+                    <i class="fas fa-mobile-screen security-icon"></i>
+                  </div>
+                  <div class="security-card-body">
+                    <div class="security-status enabled">
+                      <i class="fas fa-check-circle"></i>
+                      <span>2FA is currently <strong>enabled</strong></span>
+                    </div>
+                    <p style="font-size: 13px; color: #6b7280; margin: 12px 0;">
+                      Two-factor authentication adds an additional layer of security to your account by requiring more than just a password to log in.
+                    </p>
+                    <button class="secondary-btn" onclick="manage2FA()">
+                      <i class="fas fa-gear"></i>
+                      Manage 2FA
+                    </button>
+                  </div>
+                </div>
+
+                <div class="security-card">
+                  <div class="security-card-header">
+                    <div>
+                      <h3>Active Sessions</h3>
+                      <p>Manage devices where you're currently logged in</p>
+                    </div>
+                    <i class="fas fa-desktop security-icon"></i>
+                  </div>
+                  <div class="security-card-body">
+                    <div class="session-list" id="sessionsList">
+                      <!-- Sessions will be loaded here -->
+                    </div>
+                    <button class="secondary-btn danger" onclick="logoutAllSessions()">
+                      <i class="fas fa-right-from-bracket"></i>
+                      Logout All Devices
+                    </button>
+                  </div>
+                </div>
+
+                <div class="security-card">
+                  <div class="security-card-header">
+                    <div>
+                      <h3>Login History</h3>
+                      <p>Review recent login attempts to your account</p>
+                    </div>
+                    <i class="fas fa-clock-rotate-left security-icon"></i>
+                  </div>
+                  <div class="security-card-body">
+                    <div class="login-history" id="loginHistory">
+                      <!-- Login history will be loaded here -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notifications Section -->
+            <div class="settings-section" id="notifications-section">
+              <div class="section-header">
+                <h2>Notification Preferences</h2>
+                <button class="primary-btn" onclick="saveNotifications()">
+                  <i class="fas fa-save"></i>
+                  Save Preferences
+                </button>
+              </div>
+
+              <div class="notifications-grid">
+                <div class="notification-category">
+                  <h3>
+                    <i class="fas fa-robot"></i>
+                    System Alerts
+                  </h3>
+                  <div class="notification-item">
+                    <div class="notification-info">
+                      <strong>Cart Status Changes</strong>
+                      <p>Get notified when cart status changes (operational, maintenance, etc.)</p>
+                    </div>
+                    <div class="notification-toggles">
+                      <label class="toggle-switch" title="Email">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <label class="toggle-switch" title="Push">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <label class="toggle-switch" title="SMS">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="notification-item">
+                    <div class="notification-info">
+                      <strong>Battery Low Warnings</strong>
+                      <p>Receive alerts when cart battery level drops below 20%</p>
+                    </div>
+                    <div class="notification-toggles">
+                      <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="notification-item">
+                    <div class="notification-info">
+                      <strong>Maintenance Reminders</strong>
+                      <p>Get reminders when cart maintenance is due</p>
+                    </div>
+                    <div class="notification-toggles">
+                      <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="notification-category">
+                  <h3>
+                    <i class="fas fa-chart-line"></i>
+                    Reports & Analytics
+                  </h3>
+                  <div class="notification-item">
+                    <div class="notification-info">
+                      <strong>Daily Summary Reports</strong>
+                      <p>Receive daily summary of system performance and activities</p>
+                    </div>
+                    <div class="notification-toggles">
+                      <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="notification-item">
+                    <div class="notification-info">
+                      <strong>Weekly Analytics</strong>
+                      <p>Get weekly analytics and insights about fleet performance</p>
+                    </div>
+                    <div class="notification-toggles">
+                      <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="notification-category">
+                  <h3>
+                    <i class="fas fa-users"></i>
+                    Team & Updates
+                  </h3>
+                  <div class="notification-item">
+                    <div class="notification-info">
+                      <strong>Team Member Activity</strong>
+                      <p>Get notified about team member logins and activities</p>
+                    </div>
+                    <div class="notification-toggles">
+                      <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="notification-item">
+                    <div class="notification-info">
+                      <strong>System Updates</strong>
+                      <p>Receive notifications about system updates and new features</p>
+                    </div>
+                    <div class="notification-toggles">
+                      <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="notification-legend">
+                <div class="legend-item">
+                  <i class="fas fa-envelope"></i>
+                  <span>Email</span>
+                </div>
+                <div class="legend-item">
+                  <i class="fas fa-bell"></i>
+                  <span>Push Notification</span>
+                </div>
+                <div class="legend-item">
+                  <i class="fas fa-message"></i>
+                  <span>SMS</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preferences Section -->
+            <div class="settings-section" id="preferences-section">
+              <div class="section-header">
+                <h2>Application Preferences</h2>
+                <button class="primary-btn" onclick="savePreferences()">
+                  <i class="fas fa-save"></i>
+                  Save Preferences
+                </button>
+              </div>
+
+              <div class="preferences-grid">
+                <div class="preference-card">
+                  <h3>
+                    <i class="fas fa-palette"></i>
+                    Appearance
+                  </h3>
+                  <div class="preference-item">
+                    <label>Theme</label>
+                    <select class="form-input">
+                      <option>Light</option>
+                      <option>Dark</option>
+                      <option>Auto (System)</option>
+                    </select>
+                  </div>
+                  <div class="preference-item">
+                    <label>Color Accent</label>
+                    <div class="color-picker">
+                      <div class="color-option active" style="background: #4873ff;"></div>
+                      <div class="color-option" style="background: #66bb6a;"></div>
+                      <div class="color-option" style="background: #ffa726;"></div>
+                      <div class="color-option" style="background: #ff5252;"></div>
+                      <div class="color-option" style="background: #9c27b0;"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="preference-card">
+                  <h3>
+                    <i class="fas fa-globe"></i>
+                    Language & Region
+                  </h3>
+                  <div class="preference-item">
+                    <label>Language</label>
+                    <select class="form-input">
+                      <option>English</option>
+                      <option>العربية</option>
+                      <option>Français</option>
+                    </select>
+                  </div>
+                  <div class="preference-item">
+                    <label>Date Format</label>
+                    <select class="form-input">
+                      <option>DD/MM/YYYY</option>
+                      <option>MM/DD/YYYY</option>
+                      <option>YYYY-MM-DD</option>
+                    </select>
+                  </div>
+                  <div class="preference-item">
+                    <label>Time Format</label>
+                    <select class="form-input">
+                      <option>24-hour</option>
+                      <option>12-hour (AM/PM)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="preference-card">
+                  <h3>
+                    <i class="fas fa-gauge-high"></i>
+                    Performance
+                  </h3>
+                  <div class="preference-item-toggle">
+                    <div>
+                      <strong>Enable Animations</strong>
+                      <p style="font-size: 12px; color: #6b7280; margin: 4px 0 0 0;">Smooth transitions and effects</p>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                  <div class="preference-item-toggle">
+                    <div>
+                      <strong>Auto-Refresh Data</strong>
+                      <p style="font-size: 12px; color: #6b7280; margin: 4px 0 0 0;">Automatically update dashboard data</p>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                  <div class="preference-item">
+                    <label>Refresh Interval</label>
+                    <select class="form-input">
+                      <option>15 seconds</option>
+                      <option selected>30 seconds</option>
+                      <option>1 minute</option>
+                      <option>5 minutes</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="preference-card">
+                  <h3>
+                    <i class="fas fa-table"></i>
+                    Data Display
+                  </h3>
+                  <div class="preference-item">
+                    <label>Items Per Page</label>
+                    <select class="form-input">
+                      <option>25</option>
+                      <option selected>50</option>
+                      <option>100</option>
+                    </select>
+                  </div>
+                  <div class="preference-item">
+                    <label>Default View</label>
+                    <select class="form-input">
+                      <option selected>Grid View</option>
+                      <option>List View</option>
+                    </select>
+                  </div>
+                  <div class="preference-item-toggle">
+                    <div>
+                      <strong>Compact Mode</strong>
+                      <p style="font-size: 12px; color: #6b7280; margin: 4px 0 0 0;">Reduce spacing in tables and lists</p>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Privacy Section -->
+            <div class="settings-section" id="privacy-section">
+              <div class="section-header">
+                <h2>Privacy & Data</h2>
+              </div>
+
+              <div class="privacy-cards">
+                <div class="privacy-card">
+                  <div class="privacy-card-header">
+                    <i class="fas fa-shield-halved"></i>
+                    <h3>Data Privacy</h3>
+                  </div>
+                  <div class="privacy-item">
+                    <div>
+                      <strong>Profile Visibility</strong>
+                      <p>Control who can see your profile information</p>
+                    </div>
+                    <select class="form-input" style="max-width: 200px;">
+                      <option>Everyone</option>
+                      <option selected>Team Members Only</option>
+                      <option>Administrators Only</option>
+                    </select>
+                  </div>
+                  <div class="privacy-item">
+                    <div>
+                      <strong>Activity Status</strong>
+                      <p>Show when you're online or active</p>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                  <div class="privacy-item">
+                    <div>
+                      <strong>Usage Analytics</strong>
+                      <p>Help us improve by sharing usage data</p>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" checked>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="privacy-card">
+                  <div class="privacy-card-header">
+                    <i class="fas fa-download"></i>
+                    <h3>Data Management</h3>
+                  </div>
+                  <button class="secondary-btn full-width" onclick="downloadData()">
+                    <i class="fas fa-download"></i>
+                    Download My Data
+                  </button>
+                  <button class="secondary-btn full-width danger" onclick="deleteAccount()">
+                    <i class="fas fa-trash"></i>
+                    Delete My Account
+                  </button>
+                  <p style="font-size: 12px; color: #6b7280; margin-top: 12px;">
+                    Deleting your account is permanent and cannot be undone. All your data will be permanently removed.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/GraduationProject/api_front/api.js"></script>
+    <script src="/GraduationProject/api_front/account.js"></script>
+  </body>
+</html>

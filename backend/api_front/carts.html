@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carts Management - Smart Bins</title>
+    <link rel="stylesheet" href="/GraduationProject/CSS/style.css" />
+    <link rel="stylesheet" href="/GraduationProject/CSS/carts.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  </head>
+  <body>
+    <script>
+  function logout() {
+    if (confirm('Are you sure you want to logout')) {
+      sessionStorage.clear();
+      localStorage.clear();
+      window.location.href = '/GraduationProject/api_front/login.html';
+    }
+  }
+
+  window.onload = function() {
+    if (!sessionStorage.getItem('isLoggedIn')) {
+      window.location.href = '/GraduationProject/api_front/login.html';
+    }
+  }
+</script>
+    <div class="container">
+      <aside class="sidebar">
+        <div class="logo-box">
+          <div class="logo-icon">🛞</div>
+          <h2>Smart Bins Admin</h2>
+        </div>
+
+        <ul class="menu">
+          <li>
+            <a href="/GraduationProject/api_front/overview.html"><span class="icon">⌛</span> Overview</a>
+          </li>
+
+          <li>
+            <a href="/GraduationProject/api_front/tracking.html"
+              ><span class="icon">📍</span> Live Tracking</a
+            >
+          </li>
+          <li class="active">
+            <a href="/GraduationProject/api_front/carts.html"
+              ><span class="icon">🛒</span> Carts Management</a
+            >
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/trips.html"><span class="icon">🗂</span> Trips & Logs</a>
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/alerts.html"><span class="icon">🔔</span> Alerts</a>
+          </li>
+          <li>
+            <a href="system.html"
+              ><span class="icon">⚙</span> System Configuration</a
+            >
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/admin.html"><span class="icon">🛡</span> Admin Tools</a>
+          </li>
+          <li>
+            <a href="/GraduationProject/api_front/account.html"
+              ><span class="icon">👤</span> Account Settings</a
+            >
+          </li>
+        </ul>
+        <div class="sidebar-footer">
+          <button class="logout-btn" onclick="logout()">
+            <span class="icon">🚪</span>
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <!-- Topbar-->
+        <div class="topbar">
+          <div class="topbar-left">
+            <h1 class="page-title">Carts Management</h1>
+            <div class="breadcrumb">
+              <span class="current">Fleet Overview & Control</span>
+            </div>
+          </div>
+          
+          <div class="topbar-right">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" id="searchCart" placeholder="Search carts..." onkeyup="handleSearch()">
+            </div>
+            
+            <div class="topbar-icons">
+              <button class="icon-btn" id="notificationBtn" title="Notifications" onclick="toggleCartNotifications()">
+                <i class="fas fa-bell"></i>
+                <span class="badge">3</span>
+              </button>
+              
+              <!-- <button class="icon-btn" title="Messages">
+                <i class="fas fa-envelope"></i>
+                <span class="badge">5</span>
+              </button> -->
+
+              <!-- Theme and view toggles (functional like overview) -->
+              <button class="icon-btn" title="Toggle Theme" onclick="toggleCartsTheme()">
+                <i class="fas fa-moon" id="cartsThemeIcon"></i>
+              </button>
+
+              <button class="icon-btn" title="Toggle View" onclick="toggleTopbarView()">
+                <i class="fas fa-th-large" id="cartsViewIcon"></i>
+              </button>
+            </div>
+            
+            <div class="user-profile">
+              <img src="https://ui-avatars.com/api/?name=Admin+User&background=4873ff&color=fff" alt="User">
+              <div class="user-info">
+                <span class="user-name">Admin User</span>
+                <span class="user-role">Administrator</span>
+              </div>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications Dropdown (same style as overview) -->
+        <div class="notifications-dropdown" id="notificationsDropdown">
+          <div class="notifications-header">
+            <h3>Notifications</h3>
+            <button onclick="clearCartNotifications()">Clear All</button>
+          </div>
+          <div class="notifications-list">
+            <div class="notification-item unread">
+              <div class="notification-icon red">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">Critical Cart Alert</p>
+                <p class="notification-text">BIN-010 requires immediate maintenance</p>
+                <span class="notification-time">5 mins ago</span>
+              </div>
+            </div>
+            <div class="notification-item">
+              <div class="notification-icon orange">
+                <i class="fas fa-battery-quarter"></i>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">Low Battery</p>
+                <p class="notification-text">BIN-002 battery at 20%</p>
+                <span class="notification-time">18 mins ago</span>
+              </div>
+            </div>
+            <div class="notification-item">
+              <div class="notification-icon blue">
+                <i class="fas fa-route"></i>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">Route Updated</p>
+                <p class="notification-text">New optimal route applied for Zone C</p>
+                <span class="notification-time">30 mins ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="main-content">
+          <!-- Action Bar -->
+          <div class="action-bar">
+            <div class="action-bar-left">
+              <button class="primary-btn" onclick="openAddCartModal()">
+                <i class="fas fa-plus"></i>
+                Add New Cart
+              </button>
+              <button class="secondary-btn" onclick="refreshCarts(this)">
+                <i class="fas fa-sync-alt"></i>
+                Refresh
+              </button>
+              <button class="secondary-btn" onclick="exportCarts()">
+                <i class="fas fa-download"></i>
+                Export CSV
+              </button>
+            </div>
+            
+            <div class="action-bar-right">
+              <div class="view-toggle">
+                <button class="view-btn active" data-view="grid" onclick="toggleView('grid')">
+                  <i class="fas fa-grip"></i>
+                </button>
+                <button class="view-btn" data-view="list" onclick="toggleView('list')">
+                  <i class="fas fa-list"></i>
+                </button>
+              </div>
+              
+              <select class="filter-select" id="statusFilter" onchange="filterCarts()">
+                <option value="all">All Status</option>
+                <option value="operational">Operational</option>
+                <option value="maintenance">Maintenance</option>
+                <option value="charging">Charging</option>
+                <option value="offline">Offline</option>
+              </select>
+              
+              <select class="filter-select" id="zoneFilter" onchange="filterCarts()">
+                <option value="all">All Zones</option>
+                <option value="zone-a">Zone A</option>
+                <option value="zone-b">Zone B</option>
+                <option value="zone-c">Zone C</option>
+                <option value="zone-d">Zone D</option>
+                <option value="zone-e">Zone E</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Fleet Stats -->
+          <div class="fleet-stats">
+            <div class="fleet-stat-card">
+              <div class="stat-icon operational">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="stat-content">
+                <span class="stat-label">Operational</span>
+                <span class="stat-number" id="operationalCount">0</span>
+              </div>
+            </div>
+
+            <div class="fleet-stat-card">
+              <div class="stat-icon maintenance">
+                <i class="fas fa-wrench"></i>
+              </div>
+              <div class="stat-content">
+                <span class="stat-label">Maintenance</span>
+                <span class="stat-number" id="maintenanceCount">0</span>
+              </div>
+            </div>
+
+            <div class="fleet-stat-card">
+              <div class="stat-icon charging">
+                <i class="fas fa-charging-station"></i>
+              </div>
+              <div class="stat-content">
+                <span class="stat-label">Charging</span>
+                <span class="stat-number" id="chargingCount">0</span>
+              </div>
+            </div>
+
+            <div class="fleet-stat-card">
+              <div class="stat-icon offline">
+                <i class="fas fa-power-off"></i>
+              </div>
+              <div class="stat-content">
+                <span class="stat-label">Offline</span>
+                <span class="stat-number" id="offlineCount">0</span>
+              </div>
+            </div>
+
+            <div class="fleet-stat-card">
+              <div class="stat-icon total">
+                <i class="fas fa-robot"></i>
+              </div>
+              <div class="stat-content">
+                <span class="stat-label">Total Fleet</span>
+                <span class="stat-number" id="totalCount">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carts Grid -->
+          <div id="cartsContainer" class="carts-grid">
+            <!-- Carts will be dynamically loaded here -->
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Cart Details Modal -->
+    <div id="cartModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modalTitle">Cart Details</h2>
+          <button class="close-btn" onclick="closeModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body" id="modalBody">
+          <!-- Modal content will be loaded dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <script src="/GraduationProject/api_front/api.js"></script><script src="/GraduationProject/api_front/carts.js"></script>
+  </body>
+</html>
