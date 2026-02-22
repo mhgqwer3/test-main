@@ -5,8 +5,10 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./backend/api_front:/usr/local/apache2/htdocs/GraduationProject/api_front
-      - ./frontend/CSS:/usr/local/apache2/htdocs/GraduationProject/CSS
+      - ./backend/api_front:/usr/local/apache2/htdocs/api_front
+      - ./frontend/CSS:/usr/local/apache2/htdocs/CSS
+      - ./frontend/JAVASCRIPT:/usr/local/apache2/htdocs/JAVASCRIPT
+      - ./frontend/pages:/usr/local/apache2/htdocs/pages
     networks:
       - frontend-net
 
@@ -24,7 +26,6 @@ services:
     networks:
       - frontend-net
       - backend-net
-    
 
   database:
     image: mysql:8.0
