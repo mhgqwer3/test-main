@@ -64,10 +64,10 @@ function getDbConnection() {
         return $db;
     }
     
-    $host = getenv("DB_HOST") ?: "database";
-    $dbname = getenv("DB_NAME") ?: "smart_bins_system";
-    $username = getenv("DB_USER") ?: "root";
-    $password = getenv("DB_PASS") ?: "rootpassword";
+    $host = $_SERVER['DB_HOST'] ?? 'database';
+    $dbname = $_SERVER['DB_NAME'] ?? 'smart_bins_system';
+    $username = $_SERVER['DB_USER'] ?? 'root';
+    $password = $_SERVER['DB_PASS'] ?? 'rootpassword';
     
     try {
         $db = new PDO(

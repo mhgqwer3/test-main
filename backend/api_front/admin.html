@@ -20,8 +20,22 @@
 
   window.onload = function() {
     const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+    const userRole   = sessionStorage.getItem('userRole');
+
     if (!isLoggedIn) {
       window.location.href = '/GraduationProject/api_front/login.html';
+      return;
+    }
+
+    if (userRole !== 'admin' && userRole !== 'super_admin') {
+      alert('Access Denied! This page is for Admins only.');
+      window.location.href = '/GraduationProject/api_front/overview.html';
+      return;
+    }
+
+    if (userRole === 'admin') {
+      const superOnlyElements = document.querySelectorAll('.super-admin-only');
+      superOnlyElements.forEach(el => el.style.display = 'none');
     }
   }
 </script>

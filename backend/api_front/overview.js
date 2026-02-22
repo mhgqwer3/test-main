@@ -12,7 +12,7 @@ let autoRefreshInterval;
 
 // ── Auth Guard ──
 if (!API.isLoggedIn()) {
-    window.location.href = 'http://localhost/GraduationProject/login.html';
+    window.location.href = '/api_front/login.html';
 }
 
 // Initialize Overview Page

@@ -348,7 +348,125 @@ if ($method === "POST") {
         }
     }
 
-    jsonResponse(["status" => "error", "message" => "Unknown POST action: " . $action], 404);
+    // ===== إضافة إشعار =====
+    if ($action === "add_notification") {
+        $data = getJsonInput();
+
+        $userId  = $data["user_id"] ?? 1;
+        $type    = sanitize($data["type"] ?? "info");
+        $title   = sanitize($data["title"] ?? "");
+        $message = sanitize($data["message"] ?? "");
+        $link    = sanitize($data["link"] ?? "");
+
+        if (!$title || !$message) {
+            jsonResponse(["status" => "error", "message" => "Missing fields"], 400);
+        }
+
+        $stmt = $db->prepare("
+            INSERT INTO notifications (user_id, type, title, message, link, is_read)
+            VALUES (:uid, :type, :title, :msg, :link, 0)
+        ");
+
+        try {
+            $stmt->execute([
+                ":uid"   => $userId,
+                ":type"  => $type,
+                ":title" => $title,
+                ":msg"   => $message,
+                ":link"  => $link
+            ]);
+
+            jsonResponse(["status" => "success", "message" => "Notification added", "id" => $db->lastInsertId()]);
+        } catch (Exception $e) {
+            jsonResponse(["status" => "error", "message" => "Database error"], 500);
+        }
+    }
+
+        // ===== إضافة مستخدم جديد (Admin Only) =====
+    if ($action === "add_user") {
+        $data = getJsonInput();
+
+        $adminRole = $data["admin_role"] ?? "";
+        if ($adminRole !== "admin" && $adminRole !== "super_admin") {
+            jsonResponse(["status" => "error", "message" => "Access Denied. Admins only."], 403);
+        }
+
+        $email    = sanitize($data["email"]     ?? "");
+        $password = sanitize($data["password"]  ?? "");
+        $fullName = sanitize($data["full_name"] ?? "");
+        $role     = sanitize($data["role"]      ?? "user");
+        $phone    = sanitize($data["phone"]     ?? "");
+
+        if (!$email || !$password || !$fullName) {
+            jsonResponse(["status" => "error", "message" => "Missing required fields"], 400);
+        }
+
+        // تحقق إن الايميل مش موجود
+        $check = $db->prepare("SELECT user_id FROM users WHERE email = :email LIMIT 1");
+        $check->execute([":email" => $email]);
+        if ($check->fetch()) {
+            jsonResponse(["status" => "error", "message" => "Email already exists"], 409);
+        }
+
+        $stmt = $db->prepare("
+            INSERT INTO users (email, password, full_name, role, phone, is_active, created_at)
+            VALUES (:email, :password, :full_name, :role, :phone, 1, NOW())
+        ");
+
+        try {
+            $stmt->execute([
+                ":email"     => $email,
+                ":password"  => $password,
+                ":full_name" => $fullName,
+                ":role"      => $role,
+                ":phone"     => $phone
+            ]);
+
+            jsonResponse(["status" => "success", "message" => "User added", "user_id" => $db->lastInsertId()]);
+        } catch (Exception $e) {
+            jsonResponse(["status" => "error", "message" => "Database error"], 500);
+        }
+    }
+
+        // ===== إضافة Activity Log =====
+    if ($action === "add_activity_log") {
+        $data = getJsonInput();
+
+        $userId      = $data["user_id"]      ?? 1;
+        $actionType  = sanitize($data["action_type"]  ?? "");
+        $entityType  = sanitize($data["entity_type"]  ?? null);
+        $entityId    = $data["entity_id"]    ?? null;
+        $description = sanitize($data["description"]  ?? "");
+        $ipAddress   = $_SERVER["REMOTE_ADDR"] ?? "unknown";
+        $userAgent   = $_SERVER["HTTP_USER_AGENT"] ?? "unknown";
+
+        if (!$actionType || !$description) {
+            jsonResponse(["status" => "error", "message" => "Missing fields"], 400);
+        }
+
+        $stmt = $db->prepare("
+            INSERT INTO activity_logs (user_id, action_type, entity_type, entity_id, description, ip_address, user_agent)
+            VALUES (:uid, :action, :entity_type, :entity_id, :desc, :ip, :ua)
+        ");
+
+        try {
+            $stmt->execute([
+                ":uid"         => $userId,
+                ":action"      => $actionType,
+                ":entity_type" => $entityType,
+                ":entity_id"   => $entityId,
+                ":desc"        => $description,
+                ":ip"          => $ipAddress,
+                ":ua"          => $userAgent
+            ]);
+
+            jsonResponse(["status" => "success", "message" => "Log added", "id" => $db->lastInsertId()]);
+        } catch (Exception $e) {
+            jsonResponse(["status" => "error", "message" => "Database error"], 500);
+        }
+    }
+
+        jsonResponse(["status" => "error", "message" => "Unknown POST action: " . $action], 404);
 }
 
 // ==========================================
@@ -564,8 +682,55 @@ if ($method === "GET") {
         ]);
     }
 
-    jsonResponse(["status" => "error", "message" => "Unknown GET action: " . $action], 404);
+    // ===== قائمة الإشعارات =====
+    if ($action === "list_notifications") {
+        $userId = $_GET["user_id"] ?? 1;
+        $isRead = $_GET["is_read"] ?? null;
+
+        $query = "SELECT * FROM notifications WHERE user_id = :uid";
+        $params = [":uid" => $userId];
+
+        if ($isRead !== null) {
+            $query .= " AND is_read = :is_read";
+            $params[":is_read"] = (int)$isRead;
+        }
+
+        $query .= " ORDER BY created_at DESC LIMIT 50";
+
+        $stmt = $db->prepare($query);
+        $stmt->execute($params);
+        $notifications = $stmt->fetchAll();
+
+        jsonResponse(["status" => "success", "data" => $notifications, "count" => count($notifications)]);
+    }
+
+        // ===== قائمة Activity Logs =====
+    if ($action === "list_activity_logs") {
+        $userId = $_GET["user_id"] ?? null;
+        $limit  = isset($_GET["limit"]) ? (int)$_GET["limit"] : 50;
+
+        $query  = "SELECT * FROM activity_logs WHERE 1=1";
+        $params = [];
+
+        if ($userId) {
+            $query .= " AND user_id = :uid";
+            $params[":uid"] = $userId;
+        }
+
+        $query .= " ORDER BY created_at DESC LIMIT :limit";
+
+        $stmt = $db->prepare($query);
+        $stmt->bindValue(":limit", $limit, PDO::PARAM_INT);
+        foreach ($params as $k => $v) $stmt->bindValue($k, $v);
+        $stmt->execute();
+        $logs = $stmt->fetchAll();
+
+        jsonResponse(["status" => "success", "data" => $logs, "count" => count($logs)]);
+    }
+
+        jsonResponse(["status" => "error", "message" => "Unknown GET action: " . $action], 404);
 }
+
 
 // ==========================================
 // PUT Methods
@@ -601,9 +766,9 @@ if ($method === "PUT") {
     jsonResponse(["status" => "error", "message" => "Unknown PUT action"], 404);
 }
 
-// ==========================================
-// Method Not Allowed
-// ==========================================
+
+
+
 
 jsonResponse(["status" => "error", "message" => "Method not allowed: " . $method], 405);
 ?>

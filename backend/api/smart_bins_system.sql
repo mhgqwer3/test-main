@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 15, 2026 at 01:25 AM
+-- Generation Time: Feb 22, 2026 at 03:00 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -39,6 +39,13 @@ CREATE TABLE `activity_logs` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `activity_logs`
+--
+
+INSERT INTO `activity_logs` (`log_id`, `user_id`, `action_type`, `entity_type`, `entity_id`, `description`, `ip_address`, `user_agent`, `created_at`) VALUES
+(1, NULL, 'LOGIN', 'USER', 101, 'User logged in', '192.168.1.1', 'Mozilla/5.0', '2026-02-22 01:22:14');
+
 -- --------------------------------------------------------
 
 --
@@ -73,7 +80,9 @@ INSERT INTO `alerts` (`alert_id`, `bin_id`, `trip_id`, `alert_type`, `category`,
 (2, 1, NULL, 'warning', 'fill_level', 'High Fill Level', 'BIN-001 fill level reached 95%', 'active', 7, NULL, NULL, NULL, NULL, NULL, '2026-02-14 23:06:38', '2026-02-14 23:06:38'),
 (3, 6, NULL, 'warning', 'battery', 'Low Battery', 'BIN-008 battery at 25%, charging required', 'acknowledged', 5, NULL, NULL, NULL, NULL, NULL, '2026-02-14 23:06:38', '2026-02-14 23:06:38'),
 (4, 8, NULL, 'critical', 'system', 'Bin Offline', 'BIN-010 is offline and not responding', 'active', 9, NULL, NULL, NULL, NULL, NULL, '2026-02-14 23:06:38', '2026-02-14 23:06:38'),
-(5, 2, 3, 'info', 'trip', 'Trip Completed', 'TRP-2024-003 completed successfully', 'resolved', 1, NULL, NULL, NULL, NULL, NULL, '2026-02-14 23:06:38', '2026-02-14 23:06:38');
+(5, 2, 3, 'info', 'trip', 'Trip Completed', 'TRP-2024-003 completed successfully', 'resolved', 1, NULL, NULL, NULL, NULL, NULL, '2026-02-14 23:06:38', '2026-02-14 23:06:38'),
+(6, 1, NULL, 'warning', 'fill_level', 'Bin Almost Full', 'BIN-001 fill level reached 90%', 'active', 8, NULL, NULL, NULL, NULL, NULL, '2026-02-20 15:13:48', '2026-02-20 15:13:48'),
+(7, 1, NULL, 'critical', 'fill_level', 'Bin Full', 'BIN-001 fill level reached 95%', 'active', 9, NULL, NULL, NULL, NULL, NULL, '2026-02-20 15:24:00', '2026-02-20 15:24:00');
 
 -- --------------------------------------------------------
 
@@ -109,7 +118,7 @@ CREATE TABLE `bins` (
 --
 
 INSERT INTO `bins` (`bin_id`, `bin_code`, `bin_name`, `status`, `zone`, `location_name`, `latitude`, `longitude`, `battery_level`, `fill_level`, `capacity`, `model`, `manufacture_date`, `last_maintenance`, `next_maintenance`, `firmware_version`, `hardware_version`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 'BIN-001', 'Smart Bin 001', 'operational', 'zone-a', 'Al Gomhoria St, Mansoura', 31.03640000, 31.38070000, 85, 95, 100, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-02-14 23:06:38', '2026-02-14 23:06:38'),
+(1, 'BIN-001', 'Smart Bin 001', 'maintenance', 'zone-a', '', 31.03640000, 31.38070000, 85, 75, 100, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-02-14 23:06:38', '2026-02-20 15:03:26'),
 (2, 'BIN-002', 'Smart Bin 002', 'operational', 'zone-b', 'Al Matar Area, Mansoura', 31.04200000, 31.37500000, 65, 88, 100, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-02-14 23:06:38', '2026-02-14 23:06:38'),
 (3, 'BIN-003', 'Smart Bin 003', 'operational', 'zone-a', 'Al Mashaya Area, Mansoura', 31.03800000, 31.38500000, 92, 68, 100, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-02-14 23:06:38', '2026-02-14 23:06:38'),
 (4, 'BIN-005', 'Smart Bin 005', 'operational', 'zone-c', 'Toriel District, Mansoura', 31.02500000, 31.39000000, 78, 32, 100, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-02-14 23:06:38', '2026-02-14 23:06:38'),
@@ -140,8 +149,9 @@ CREATE TABLE `bin_commands` (
 --
 
 INSERT INTO `bin_commands` (`id`, `bin_code`, `command`, `params`, `status`, `result`, `created_at`, `executed_at`) VALUES
-(1, 'BIN-001', 'collect', '{\"priority\": \"high\"}', 'processing', NULL, '2026-02-14 23:06:40', NULL),
-(2, 'BIN-002', 'reset_sensor', '{}', 'completed', NULL, '2026-02-14 23:06:40', NULL);
+(1, 'BIN-001', 'collect', '{\"priority\": \"high\"}', 'completed', 'success', '2026-02-14 23:06:40', '2026-02-20 17:21:33'),
+(2, 'BIN-002', 'reset_sensor', '{}', 'completed', NULL, '2026-02-14 23:06:40', NULL),
+(3, 'BIN-001', 'return_to_base', '{\"speed\":\"normal\"}', 'pending', NULL, '2026-02-20 15:12:27', NULL);
 
 -- --------------------------------------------------------
 
@@ -191,6 +201,14 @@ CREATE TABLE `history_readings` (
   `recorded_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `history_readings`
+--
+
+INSERT INTO `history_readings` (`id`, `bin_id`, `bin_code`, `fill_level`, `battery_level`, `latitude`, `longitude`, `recorded_at`) VALUES
+(1, NULL, '1', 75, 85, NULL, NULL, '2026-02-15 02:54:35'),
+(2, NULL, '1', 75, 85, NULL, NULL, '2026-02-17 22:19:43');
+
 -- --------------------------------------------------------
 
 --
@@ -230,7 +248,7 @@ INSERT INTO `maintenance_records` (`maintenance_id`, `bin_id`, `maintenance_type
 
 CREATE TABLE `notifications` (
   `notification_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
   `type` enum('alert','trip','maintenance','system') NOT NULL,
   `title` varchar(200) NOT NULL,
   `message` text NOT NULL,
@@ -238,6 +256,16 @@ CREATE TABLE `notifications` (
   `is_read` tinyint(1) DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `notifications`
+--
+
+INSERT INTO `notifications` (`notification_id`, `user_id`, `type`, `title`, `message`, `link`, `is_read`, `created_at`) VALUES
+(16, NULL, 'alert', 'Bin Full', 'BIN-001 fill level reached 95%', '/api_front/alerts.html', 0, '2026-02-22 01:42:16'),
+(17, NULL, '', 'Low Battery', 'BIN-002 battery at 15%', '/api_front/alerts.html', 0, '2026-02-22 01:42:16'),
+(18, NULL, '', 'Trip Completed', 'BIN-003 trip finished successfully', '/api_front/trips.html', 1, '2026-02-22 01:42:16'),
+(19, 1, 'alert', '', 'Test notification', NULL, 0, '2026-02-22 01:46:34');
 
 -- --------------------------------------------------------
 
@@ -287,6 +315,13 @@ CREATE TABLE `tracking_points` (
   `timestamp` datetime NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tracking_points`
+--
+
+INSERT INTO `tracking_points` (`point_id`, `trip_id`, `bin_id`, `latitude`, `longitude`, `speed`, `battery_level`, `fill_level`, `timestamp`, `created_at`) VALUES
+(1, 1, 5, 24.71360000, 46.67530000, 35.50, 85, 60, '2026-02-22 03:54:42', '2026-02-22 01:54:42');
 
 -- --------------------------------------------------------
 
@@ -355,8 +390,12 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `email`, `password`, `full_name`, `role`, `phone`, `avatar_url`, `is_active`, `last_login`, `created_at`, `updated_at`) VALUES
-(1, 'mohamed@gmail.com', '##$$password123', 'Admin User', 'super_admin', '+201024714795', NULL, 1, NULL, '2026-02-14 23:06:38', '2026-02-15 00:16:12'),
-(4, 'admin22@smartbins.com', '$2y$10$8bV9rW1aZKzKpVY7J4xwTe8Ff9bQ0bYzOaD7e5pR4wK2BzZcQYxSe', 'Admin User', 'admin', NULL, NULL, 1, NULL, '2026-02-15 00:01:01', '2026-02-15 00:01:01');
+(1, '', '', '', 'admin', NULL, NULL, 1, NULL, '2026-02-22 01:45:23', '2026-02-22 01:45:23'),
+(4, 'Nader Elsayed@smartbins.com', '##password123', 'Admin User', 'admin', NULL, NULL, 1, '2026-02-22 02:24:20', '2026-02-15 00:01:01', '2026-02-22 00:38:26'),
+(5, 'ahmed.adel@smartbins.com', 'user123', 'Ahmed Adel', 'operator', '01001234567', NULL, 1, '2026-02-22 02:51:30', '2026-02-22 00:36:11', '2026-02-22 00:51:30'),
+(6, 'omar.alqeeran@smartbins.com', 'user123', 'Omar Alqeeran', 'operator', '01112345678', NULL, 1, NULL, '2026-02-22 00:36:11', '2026-02-22 00:40:58'),
+(7, 'Muhamed.Magdy@smartbins.com', 'user456', 'Mohammed Magdy', 'super_admin', '01024714795', NULL, 1, '2026-02-22 03:23:56', '2026-02-22 00:36:11', '2026-02-22 01:23:56'),
+(8, 'user1@autobins.com', 'user123', 'Mohamed Ahmed', '', '01001234567', NULL, 1, NULL, '2026-02-22 01:00:11', '2026-02-22 01:00:11');
 
 --
 -- Indexes for dumped tables
@@ -488,25 +527,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `alerts`
 --
 ALTER TABLE `alerts`
-  MODIFY `alert_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `alert_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `bins`
 --
 ALTER TABLE `bins`
-  MODIFY `bin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `bin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `bin_commands`
 --
 ALTER TABLE `bin_commands`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `daily_statistics`
@@ -518,7 +557,7 @@ ALTER TABLE `daily_statistics`
 -- AUTO_INCREMENT for table `history_readings`
 --
 ALTER TABLE `history_readings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `maintenance_records`
@@ -530,7 +569,7 @@ ALTER TABLE `maintenance_records`
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `system_settings`
@@ -542,7 +581,7 @@ ALTER TABLE `system_settings`
 -- AUTO_INCREMENT for table `tracking_points`
 --
 ALTER TABLE `tracking_points`
-  MODIFY `point_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `point_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `trips`
@@ -554,7 +593,7 @@ ALTER TABLE `trips`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints for dumped tables
