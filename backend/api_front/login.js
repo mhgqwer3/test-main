@@ -8,7 +8,7 @@ const submitBtn    = loginForm ? loginForm.querySelector('button[type="submit"]'
 
 // ── Redirect if already logged in ──
 if (API.isLoggedIn()) {
-    window.location.href = '/GraduationProject/api_front/overview.html';
+    window.location.href = '/api_front/overview.html';
 }
 
 loginForm && loginForm.addEventListener('submit', async function (e) {
@@ -36,7 +36,7 @@ loginForm && loginForm.addEventListener('submit', async function (e) {
             API.saveSession(res.user, res.token);
 
             // Redirect to dashboard
-    window.location.href = '/GraduationProject/api_front/overview.html';       
+    window.location.href = '/api_front/overview.html';       
         }
     else {
             showError(res.message || 'Invalid credentials. Please try again.');

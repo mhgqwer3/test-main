@@ -4,7 +4,7 @@
 
 // ── Auth Guard ──
 if (typeof API === 'undefined' || !API.isLoggedIn()) {
-    window.location.href = '/GraduationProject/pages/overview.html';
+    window.location.href = '/pages/overview.html';
 }
 
 let currentSection = 'profile';
@@ -234,7 +234,7 @@ function deleteAccount() {
         if (confirm('Are you absolutely sure? This cannot be undone.')) {
             API.clearSession();
             alert('Account deletion initiated. Redirecting...');
-            setTimeout(() => { window.location.href = '/GraduationProject/pages/login.html'; }, 2000);
+            setTimeout(() => { window.location.href = '/pages/login.html'; }, 2000);
         }
     } else if (userInput !== null) {
         alert('Confirmation text did not match.');
@@ -245,7 +245,7 @@ function deleteAccount() {
 async function logoutUser() {
     await API.logout();
     API.clearSession();
-    window.location.href = '/GraduationProject/pages/login.html';
+    window.location.href = '/pages/login.html';
 }
 
 // ── Utility ──

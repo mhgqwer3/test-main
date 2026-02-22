@@ -4,7 +4,7 @@
 
 // ── Auth Guard ──
 if (typeof API !== 'undefined' && !API.isLoggedIn()) {
-    window.location.href = '/GraduationProject/pages/login.html';
+    window.location.href = '/pages/login.html';
 }
 
 let currentFilter = 'all';

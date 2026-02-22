@@ -4,7 +4,7 @@
 
 // ── Auth Guard ──
 if (typeof API !== 'undefined' && typeof API.isLoggedIn === 'function' && !API.isLoggedIn()) {
-    window.location.href = '/GraduationProject/pages/login.html';
+    window.location.href = '/pages/login.html';
 }
 
 // ── Logout ──
@@ -13,7 +13,7 @@ function logoutUser() {
         if (typeof API.logout === 'function') API.logout();
         if (typeof API.clearSession === 'function') API.clearSession();
     }
-    window.location.href = '/GraduationProject/pages/login.html';
+    window.location.href = '/pages/login.html';
 }
 
 // Sample API Keys

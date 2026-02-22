@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>System Configuration</title>
-    <link rel="stylesheet" href="/GraduationProject/CSS/style.css" />
-    <link rel="stylesheet" href="/GraduationProject/CSS/system.css">
+    <link rel="stylesheet" href="/CSS/style.css" />
+    <link rel="stylesheet" href="/CSS/system.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   </head>
   <body>
@@ -14,14 +14,14 @@
         if (confirm('Are you sure you want to logout')) {
           sessionStorage.clear();
           localStorage.clear();
-          window.location.href = '/GraduationProject/api_front/login.html';
+          window.location.href = '/api_front/login.html';
         }
       }
 
       window.onload = function() {
         const isLoggedIn = sessionStorage.getItem('isLoggedIn');
         if (!isLoggedIn) {
-          window.location.href = '/GraduationProject/api_front/login.html';
+          window.location.href = '/api_front/login.html';
         }
       }
     </script>
@@ -35,28 +35,28 @@
 
         <ul class="menu">
           <li>
-            <a href="/GraduationProject/api_front/overview.html"><span class="icon">⌛</span> Overview</a>
+            <a href="/api_front/overview.html"><span class="icon">⌛</span> Overview</a>
           </li>
           <li>
-            <a href="/GraduationProject/api_front/tracking.html"><span class="icon">📍</span> Live Tracking</a>
+            <a href="/api_front/tracking.html"><span class="icon">📍</span> Live Tracking</a>
           </li>
           <li>
-            <a href="/GraduationProject/api_front/carts.html"><span class="icon">🛒</span> Carts Management</a>
+            <a href="/api_front/carts.html"><span class="icon">🛒</span> Carts Management</a>
           </li>
           <li>
-            <a href="/GraduationProject/api_front/trips.html"><span class="icon">🗂</span> Trips & Logs</a>
+            <a href="/api_front/trips.html"><span class="icon">🗂</span> Trips & Logs</a>
           </li>
           <li>
-            <a href="/GraduationProject/api_front/alerts.html"><span class="icon">🔔</span> Alerts</a>
+            <a href="/api_front/alerts.html"><span class="icon">🔔</span> Alerts</a>
           </li>
           <li class="active">
             <a href="system.html"><span class="icon">⚙</span> System Configuration</a>
           </li>
           <li>
-            <a href="/GraduationProject/api_front/admin.html"><span class="icon">🛡</span> Admin Tools</a>
+            <a href="/api_front/admin.html"><span class="icon">🛡</span> Admin Tools</a>
           </li>
           <li>
-            <a href="/GraduationProject/api_front/account.html"><span class="icon">👤</span> Account Settings</a>
+            <a href="/api_front/account.html"><span class="icon">👤</span> Account Settings</a>
           </li>
         </ul>
         
@@ -889,7 +889,7 @@
       </main>
     </div>
 
-    <script src="/GraduationProject/api_front/api.js"></script>
-    <script src="/GraduationProject/api_front/system.js"></script>
+    <script src="/api_front/api.js"></script>
+    <script src="/api_front/system.js"></script>
   </body>
 </html>

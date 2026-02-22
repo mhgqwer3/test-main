@@ -4,14 +4,14 @@
 
 // ── Auth Guard ──
 if (typeof API !== 'undefined' && !API.isLoggedIn()) {
-    window.location.href = '/GraduationProject/pages/login.html';
+    window.location.href = '/pages/login.html';
 }
 
 // ── Logout ──
 async function logoutUser() {
     await API.logout();
     API.clearSession();
-    window.location.href = '/GraduationProject/pages/login.html';
+    window.location.href = '/pages/login.html';
 }
 
 let usersData = [];
